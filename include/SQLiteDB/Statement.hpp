@@ -32,9 +32,9 @@ public:
 	 * @throws StatementException if binding fails
 	*/
 	template<class... Args>
-	void bind(Args... args)
+	void bind(Args&&... args)
 	{
-		bindHelper(1, args...);
+		bindHelper(1, std::forward<Args>(args)...);
 	}
 
 	/**
@@ -81,10 +81,10 @@ private:
 	}
 
 	template<class First, class... Rest>
-	void bindHelper(int index, First value, Rest... rest)
+	void bindHelper(int index, First value, Rest&&... rest)
 	{
 		bindType(index, value);
-		bindHelper(index + 1, rest...);
+		bindHelper(index + 1, std::forward<Rest>(rest)...);
 	}
 
 	template<class T>

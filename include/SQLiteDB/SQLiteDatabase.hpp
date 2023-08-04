@@ -8,6 +8,7 @@
 #include <cstring>
 
 #include "Statement.hpp"
+#include "BulkInserter.hpp"
 
 namespace sqlitedb
 {
@@ -43,6 +44,8 @@ namespace sqlitedb
 		 * @throws StatementException on error 
 		*/
 		Statement createStatement(const char* query);
+
+		BulkInserter createBulkInserter(Statement& stmt);
 
 		/**
 		 * @brief Starts a SQL transaction
@@ -86,13 +89,6 @@ namespace sqlitedb
 
 			return result;
 		}
-
-		/**
-		 * @brief Batch inserts values in a transaction
-		 * @param stmt Statement created using an INSERT query
-		 * @param entries Entries to be added
-		*/
-		void executeBatchInsert(Statement& stmt, unsigned short entries);
 
 		~SQLiteDatabase();
 	};

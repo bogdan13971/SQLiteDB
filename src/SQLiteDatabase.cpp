@@ -32,6 +32,11 @@ Statement SQLiteDatabase::createStatement(const char* query)
 	return pimpl->createStatement(query);
 }
 
+BulkInserter SQLiteDatabase::createBulkInserter(Statement& stmt)
+{
+	return { *this, stmt };
+}
+
 void SQLiteDatabase::beginTransaction()
 {
 	pimpl->beginTransaction();

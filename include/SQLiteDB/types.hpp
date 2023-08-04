@@ -48,8 +48,8 @@ struct SQLiteType<const char(&)[N]> : std::true_type
 template<class T>
 constexpr bool is_sqlite_type()
 { 
-	return SQLiteType<T>::value || 
-		SQLiteType<std::remove_reference_t<T>>::value;
+	return SQLiteType<T>::value ||
+		SQLiteType<std::remove_const_t<std::remove_reference_t<T>>>::value;
 };
 
 template<class T>

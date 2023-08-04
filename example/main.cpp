@@ -1,6 +1,7 @@
 #include <SQLiteDB/SQLiteDatabase.hpp>
 #include <SQLiteDB/Statement.hpp>
 #include <SQLiteDB/SQLiteException.hpp>
+#include <SQLiteDB/BulkInserter.hpp>
 #include <string>
 #include <iostream>
 #include "SQLiteDB/types.hpp"
@@ -23,6 +24,20 @@ int main()
 
 		drop_stmt.execute();
 		drop_stmt.reset();
+
+		auto bulkInsert = [&]() {
+			std::vector<ENTRY> data = { std::make_tuple("name1", 12, 12.54),
+										std::make_tuple("name2", 13, 13.56),
+										std::make_tuple("name3", 14, 14.87) };
+
+			auto bulkInserter = db.createBulkInserter(insert_stmt);
+			bulkInserter.start();
+			for (const auto& element : data)
+			{
+				bulkInserter.add(std::get<0>(element), std::get<1>(element), std::get<2>(element));
+			}
+			bulkInserter.commit();
+		};
 
 		auto insertWithStmt = [&]() {
 			insert_stmt.bind("Sample name", 170, 12.24);
@@ -48,6 +63,9 @@ int main()
 
 		insertWithStmt();
 		std::cout << "Inserted with stmt\n";
+
+		bulkInsert();
+		std::cout << "Bulk inserted \n";
 
 		insertWIthDB();
 		std::cout << "Inserted with db\n";

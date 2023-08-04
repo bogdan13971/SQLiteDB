@@ -36,10 +36,7 @@ void SQLiteDatabaseInternal::init(const char* path)
 
 StatementInternal SQLiteDatabaseInternal::createStatement(const char* query)
 {
-	StatementInternal stmt;
-	stmt.create(db, query);
-
-	return stmt;
+	return StatementInternal::create(db, query);
 }
 
 void SQLiteDatabaseInternal::beginTransaction()

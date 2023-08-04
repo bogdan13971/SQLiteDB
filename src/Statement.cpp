@@ -58,6 +58,11 @@ void Statement::bindType(int index, const std::string& value)
 	pimpl->bindType(index, value);
 }
 
+void Statement::bindType(int index, std::string&& value)
+{
+	pimpl->bindType(index, std::move(value));
+}
+
 template<>
 int Statement::retrieveType(int index)
 {

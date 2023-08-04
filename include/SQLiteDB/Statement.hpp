@@ -2,12 +2,13 @@
 
 #include <string>
 #include <memory>
+#include "types.hpp"
 
 namespace sqlitedb
 {
 namespace internal
 {
-	class StatementInternal;
+class StatementInternal;
 }
 
 /**
@@ -34,8 +35,13 @@ public:
 	template<class... Args>
 	void bind(Args&&... args)
 	{
-		bindHelper(1, std::forward<Args>(args)...);
+		bindHelper(*this, 1, std::forward<Args>(args)...);
 	}
+
+	void bindType(int index, int value);
+	void bindType(int index, double value);
+	void bindType(int index, const std::string& value);
+	void bindType(int index, std::string&& value);
 
 	/**
 	 * @brief Executes the prepared statement
@@ -70,22 +76,8 @@ public:
 	friend class SQLiteDatabase;
 
 private:
-	void bindType(int index, int value);
-	void bindType(int index, double value);
-	void bindType(int index, const std::string& value);
 
-	template<class T>
-	void bindHelper(int index, T value)
-	{
-		bindType(index, value);
-	}
-
-	template<class First, class... Rest>
-	void bindHelper(int index, First value, Rest&&... rest)
-	{
-		bindType(index, value);
-		bindHelper(index + 1, std::forward<Rest>(rest)...);
-	}
+	
 
 	template<class T>
 	T retrieveType(int index);

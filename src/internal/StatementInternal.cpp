@@ -10,27 +10,32 @@ using namespace sqlitedb::internal;
 using sqlitedb::SQLiteException;
 
 StatementInternal::StatementInternal()
+	: stmt{nullptr}
 {
-	stmt = nullptr;
 }
 
-void StatementInternal::create(sqlite3* db, const char* query)
+StatementInternal StatementInternal::create(sqlite3* db, const char* query)
 {
 	if (db == nullptr)
 	{
-		throw SQLiteException("Can't create statement on null database", 0);
+		throw SQLiteException("Can't create statement on null database");
 	}
 
-	//TODO: check if this is needed
-	//char buff[100]{};
-	//strcpy_s(buff, query);
+	if (query == nullptr)
+	{
+		throw SQLiteException("Query can't be null");
+	}
 
-	int ec = sqlite3_prepare_v2(db, query, strlen(query), &stmt, nullptr);
+	StatementInternal statementInternal;
+
+	int ec = sqlite3_prepare_v2(db, query, strlen(query), &(statementInternal.stmt), nullptr);
 	if (ec != SQLITE_OK)
 	{
 		const char* m = sqlite3_errmsg(db);
 		throw SQLiteException("Prepare statement failed: " + std::string(m), ec);
 	}
+
+	return statementInternal;
 }
 
 StatementInternal::~StatementInternal()
@@ -73,6 +78,15 @@ void StatementInternal::bindType(int index, double value)
 }
 
 void StatementInternal::bindType(int index, const std::string& value)
+{
+	int ec = sqlite3_bind_text(stmt, index, value.c_str(), -1, SQLITE_TRANSIENT);
+	if (ec != SQLITE_OK)
+	{
+		throw SQLiteException("StatementInternal bind string error ", ec);
+	}
+}
+
+void StatementInternal::bindType(int index, std::string&& value)
 {
 	int ec = sqlite3_bind_text(stmt, index, value.c_str(), -1, SQLITE_TRANSIENT);
 	if (ec != SQLITE_OK)
@@ -126,4 +140,14 @@ std::string StatementInternal::retrieveType(int index)
 void StatementInternal::clear()
 {
 	sqlite3_clear_bindings(stmt);
+}
+
+const char* StatementInternal::getQueryString() const
+{
+	return sqlite3_sql(stmt);
+}
+
+int StatementInternal::getBindCount() const
+{
+	return sqlite3_bind_parameter_count(stmt);
 }

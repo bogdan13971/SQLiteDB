@@ -3,99 +3,110 @@
 #include <SQLiteDB/SQLiteException.hpp>
 #include <string>
 #include <iostream>
+#include "SQLiteDB/types.hpp"
 
 int main()
 {
 	using namespace sqlitedb;
-	using ENTRY = std::tuple<std::string, int, double>;
 
-	SQLiteDatabase db;
-	try {
-		db.init("../../example/test.db");
+	int i = 32;
 
-		Statement drop_stmt = db.createStatement("DELETE FROM test_table;");
-		Statement insert_stmt = db.createStatement("INSERT INTO test_table VALUES(@name, @id, @price);");
-		Statement select_stmt = db.createStatement("SELECT * FROM test_table LIMIT @offset, @count;");
+	std::string lval = "aaaa";
+	std::string& lvalRef = lval;
 
-		drop_stmt.execute();
-		drop_stmt.reset();
+	auto a = make_entity(i, 43, "asa vreau eu");
 
-		auto insertWithStmt = [&]() {
-			insert_stmt.bind("Sample name", 170, 12.24);
-			insert_stmt.execute();
-			insert_stmt.reset();
-			insert_stmt.clear();
+	//using ENTRY = std::tuple<std::string, int, double>;
 
-			std::string a = "Other name";
-			insert_stmt.bind(a, 200, -0.42);
-			insert_stmt.execute();
-			insert_stmt.reset();
-			insert_stmt.clear();
-		};
+	//auto buff = createBulkInsertQuery<4>("INSERT INTO table VALUES(@name, @id,")
 
-		//wrapper, also uses transaction
-		auto insertWIthDB = [&]() {
-			insert_stmt.bind("Sample again", 142, -0.32);
-			db.executeInsert(insert_stmt);
+	//SQLiteDatabase db;
+	//try {
+	//	db.init("../../example/test.db");
 
-			insert_stmt.bind("Other sample again", 28, -23.32);
-			db.executeInsert(insert_stmt);
-		};
+	//	Statement drop_stmt = db.createStatement("DELETE FROM test_table;");
+	//	Statement insert_stmt = db.createStatement("INSERT INTO test_table VALUES(@name, @id, @price);");
+	//	Statement select_stmt = db.createStatement("SELECT * FROM test_table LIMIT @offset, @count;");
 
-		insertWithStmt();
-		std::cout << "Inserted with stmt\n";
+	//	drop_stmt.execute();
+	//	drop_stmt.reset();
 
-		insertWIthDB();
-		std::cout << "Inserted with db\n";
+	//	auto insertWithStmt = [&]() {
+	//		insert_stmt.bind("Sample name", 170, 12.24);
+	//		insert_stmt.execute();
+	//		insert_stmt.reset();
+	//		insert_stmt.clear();
 
-		auto print = [](const ENTRY& one)
-		{
-			std::cout << "Retrieved: " <<
-				std::get<0>(one) << ", " <<
-				std::get<1>(one) << ", " <<
-				std::get<2>(one) << "\n";
-		};
+	//		std::string a = "Other name";
+	//		insert_stmt.bind(a, 200, -0.42);
+	//		insert_stmt.execute();
+	//		insert_stmt.reset();
+	//		insert_stmt.clear();
+	//	};
 
-		auto selectWithStmt = [&]() {
-			select_stmt.bind(0, 1);
-			select_stmt.execute();
-			auto one = select_stmt.retrieve<std::string, int, double>();
-			print(one);
-			select_stmt.reset();
-			select_stmt.clear();
+	//	//wrapper, also uses transaction
+	//	auto insertWIthDB = [&]() {
+	//		insert_stmt.bind("Sample again", 142, -0.32);
+	//		db.executeInsert(insert_stmt);
 
-			select_stmt.bind(1, 1);
-			select_stmt.execute();
-			one = select_stmt.retrieve<std::string, int, double>();
-			print(one);
-			select_stmt.reset();
-			select_stmt.clear();
-		};
+	//		insert_stmt.bind("Other sample again", 28, -23.32);
+	//		db.executeInsert(insert_stmt);
+	//	};
 
-		auto selectWithDB = [&]() {
-			select_stmt.bind(0, 10);
-			auto all = db.executeSelect<std::string, int, double>(select_stmt);
+	//	insertWithStmt();
+	//	std::cout << "Inserted with stmt\n";
 
-			return all;
-		};
+	//	insertWIthDB();
+	//	std::cout << "Inserted with db\n";
 
-		selectWithStmt();
+	//	auto print = [](const ENTRY& one)
+	//	{
+	//		std::cout << "Retrieved: " <<
+	//			std::get<0>(one) << ", " <<
+	//			std::get<1>(one) << ", " <<
+	//			std::get<2>(one) << "\n";
+	//	};
 
-		std::cout << "Printin all\n";
-		auto all = selectWithDB();
-		for (const auto& one : all)
-		{
-			print(one);
-		}
-	}
-	catch (const SQLiteException& e)
-	{
-		std::cout << e.what() << "\n";
-	}
-	catch (const std::exception& e)
-	{
-		std::cout << e.what() << "\n";
-	}
+	//	auto selectWithStmt = [&]() {
+	//		select_stmt.bind(0, 1);
+	//		select_stmt.execute();
+	//		auto one = select_stmt.retrieve<std::string, int, double>();
+	//		print(one);
+	//		select_stmt.reset();
+	//		select_stmt.clear();
+
+	//		select_stmt.bind(1, 1);
+	//		select_stmt.execute();
+	//		one = select_stmt.retrieve<std::string, int, double>();
+	//		print(one);
+	//		select_stmt.reset();
+	//		select_stmt.clear();
+	//	};
+
+	//	auto selectWithDB = [&]() {
+	//		select_stmt.bind(0, 10);
+	//		auto all = db.executeSelect<std::string, int, double>(select_stmt);
+
+	//		return all;
+	//	};
+
+	//	selectWithStmt();
+
+	//	std::cout << "Printin all\n";
+	//	auto all = selectWithDB();
+	//	for (const auto& one : all)
+	//	{
+	//		print(one);
+	//	}
+	//}
+	//catch (const SQLiteException& e)
+	//{
+	//	std::cout << e.what() << "\n";
+	//}
+	//catch (const std::exception& e)
+	//{
+	//	std::cout << e.what() << "\n";
+	//}
 
 	return 0;
 }

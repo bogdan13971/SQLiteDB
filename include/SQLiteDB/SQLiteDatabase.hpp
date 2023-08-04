@@ -3,6 +3,9 @@
 #include <functional>
 #include <vector>
 #include <memory>
+#include <array>
+#include <cassert>
+#include <cstring>
 
 #include "Statement.hpp"
 
@@ -83,6 +86,13 @@ namespace sqlitedb
 
 			return result;
 		}
+
+		/**
+		 * @brief Batch inserts values in a transaction
+		 * @param stmt Statement created using an INSERT query
+		 * @param entries Entries to be added
+		*/
+		void executeBatchInsert(Statement& stmt, unsigned short entries);
 
 		~SQLiteDatabase();
 	};

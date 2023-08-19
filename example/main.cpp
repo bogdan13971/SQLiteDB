@@ -12,8 +12,6 @@ int main()
 
 	using ENTRY = std::tuple<std::string, int, double>;
 
-	//auto buff = createBulkInsertQuery<4>("INSERT INTO table VALUES(@name, @id,")
-
 	SQLiteDatabase db;
 	try {
 		db.init("../../example/test.db");
@@ -26,7 +24,7 @@ int main()
 		drop_stmt.reset();
 
 		auto bulkInsert = [&]() {
-			std::vector<ENTRY> data = { std::make_tuple("name1", 12, 12.54),
+			auto data = { std::make_tuple("name1", 12, 12.54),
 										std::make_tuple("name2", 13, 13.56),
 										std::make_tuple("name3", 14, 14.87) };
 

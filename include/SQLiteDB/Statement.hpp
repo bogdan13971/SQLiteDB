@@ -77,9 +77,6 @@ public:
 	friend class SQLiteDatabase;
 
 private:
-
-	
-
 	template<class T>
 	T retrieveType(int index);
 

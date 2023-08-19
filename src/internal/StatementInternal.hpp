@@ -40,6 +40,7 @@ public:
 	void bindType(int index, double value);
 	void bindType(int index, const std::string& value);
 	void bindType(int index, std::string&& value);
+	void bindType(int index, int64_t value);
 
 	template<class T>
 	T retrieveType(int index);

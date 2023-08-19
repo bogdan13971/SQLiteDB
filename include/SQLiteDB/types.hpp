@@ -34,6 +34,10 @@ struct SQLiteType<double> : std::true_type
 {};
 
 template<>
+struct SQLiteType<int64_t> : std::true_type
+{};
+
+template<>
 struct SQLiteType<std::string> : std::true_type
 {};
 
@@ -67,11 +71,6 @@ decltype(auto) make_entity_single(T&& value, std::false_type)
 {
 	return std::make_tuple<T>(std::forward<T>(value));
 }
-
-//std::tuple<std::string&&> make_entity_single(const char* value, std::false_type)
-//{
-//	return std::make_tuple<std::string&&>(value);
-//}
 
 template<typename T>
 decltype(auto) make_entity_single(T&& value, std::true_type)

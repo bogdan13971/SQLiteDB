@@ -95,6 +95,15 @@ void StatementInternal::bindType(int index, std::string&& value)
 	}
 }
 
+void StatementInternal::bindType(int index, int64_t value)
+{
+	int ec = sqlite3_bind_int64(stmt, index, value);
+	if (ec != SQLITE_OK)
+	{
+		throw SQLiteException("StatementInternal bind int64 error ", ec);
+	}
+}
+
 bool StatementInternal::execute()
 {
 	int ec = sqlite3_step(stmt);
@@ -135,6 +144,12 @@ std::string StatementInternal::retrieveType(int index)
 {
 	const char* retrieved = reinterpret_cast<const char*>(sqlite3_column_text(stmt, index));
 	return std::string(retrieved);
+}
+
+template<>
+int64_t StatementInternal::retrieveType(int index)
+{
+	return sqlite3_column_int64(stmt, index);
 }
 
 void StatementInternal::clear()

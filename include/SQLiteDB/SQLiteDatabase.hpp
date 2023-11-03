@@ -90,6 +90,32 @@ namespace sqlitedb
 			return result;
 		}
 
+		/**
+		 * @brief Executes a select statement in a transaction
+		 * @tparam T Type of object to be retrieved
+		 * @param stmt Statement created using a SELECT query
+		 * @param mapper function that creates an object T from a statement
+		 * @return a vector containing all results of the select
+		*/
+		template<class R, class... Args>
+		std::vector<R> executeSelect(Statement& stmt, const std::function<R(const std::tuple<Args...>&)>& mapper)
+		{
+			std::vector<R> result;
+
+			beginTransaction();
+
+			while (stmt.execute())
+			{
+				result.push_back(stmt.retrieve(mapper));
+			}
+			stmt.reset();
+			stmt.clear();
+
+			endTransaction();
+
+			return result;
+		}
+
 		~SQLiteDatabase();
 	};
 

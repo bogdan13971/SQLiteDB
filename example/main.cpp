@@ -76,6 +76,18 @@ int main()
 				std::get<2>(one) << "\n";
 		};
 
+		struct Obj
+		{
+			std::string field1;
+			int field2;
+			double field3;
+		};
+
+		std::function<Obj(const ENTRY&)> func = [](const auto& result)
+		{
+			return Obj{ std::get<0>(result), std::get<1>(result), std::get<2>(result) };
+		};
+
 		auto selectWithStmt = [&]() {
 			select_stmt.bind(0, 1);
 			select_stmt.execute();
@@ -90,18 +102,6 @@ int main()
 			print(one);
 			select_stmt.reset();
 			select_stmt.clear();
-
-			struct Obj
-			{
-				std::string field1;
-				int field2;
-				double field3;
-			};
-
-			std::function<Obj(const ENTRY&)> func = [](const auto& result)
-			{
-				return Obj{ std::get<0>(result), std::get<1>(result), std::get<2>(result) };
-			};;
 
 			select_stmt.bind(1, 1);
 			select_stmt.execute();
@@ -120,6 +120,13 @@ int main()
 			return all;
 		};
 
+		auto selectWithMapper = [&]() {
+			select_stmt.bind(0, 10);
+			auto all = db.executeSelect(select_stmt, func);
+
+			return all;
+		};
+
 		selectWithStmt();
 
 		std::cout << "Printin all\n";
@@ -128,6 +135,8 @@ int main()
 		{
 			print(one);
 		}
+
+		auto some = selectWithMapper();
 	}
 	catch (const SQLiteException& e)
 	{

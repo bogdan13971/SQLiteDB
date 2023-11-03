@@ -90,6 +90,27 @@ int main()
 			print(one);
 			select_stmt.reset();
 			select_stmt.clear();
+
+			struct Obj
+			{
+				std::string field1;
+				int field2;
+				double field3;
+			};
+
+			std::function<Obj(const ENTRY&)> func = [](const auto& result)
+			{
+				return Obj{ std::get<0>(result), std::get<1>(result), std::get<2>(result) };
+			};;
+
+			select_stmt.bind(1, 1);
+			select_stmt.execute();
+			auto obj = select_stmt.retrieve(func);
+			
+			std::cout << obj.field1 << " " << obj.field2 << " " << obj.field3 << "\n";
+
+			select_stmt.reset();
+			select_stmt.clear();
 		};
 
 		auto selectWithDB = [&]() {

@@ -2,6 +2,7 @@
 
 #include <string>
 #include <memory>
+#include <functional>
 #include "types.hpp"
 
 namespace sqlitedb
@@ -65,6 +66,18 @@ public:
 	std::tuple<Args...> retrieve()
 	{
 		return retrieveHelper<Args...>(0);
+	}
+
+	/**
+	 * @brief Retrieve a type from a statement using a mapper. Wrap lambda in std::function.
+	 * @param mapper function to convert a tuple to a type
+	 * @note Can be called as long as execute return true
+	 * @warn Calling this when execute threw is undefined behaviour
+	*/
+	template<class R, class... Args>
+	R retrieve(const std::function<R(const std::tuple<Args...>&)>& mapper)
+	{
+		return mapper(retrieveHelper<Args...>(0));
 	}
 
 	/**
